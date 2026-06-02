@@ -475,10 +475,10 @@ class KallsymsFinder:
                 '[+]   Kernel release date: '
                 + kernel.release_date
             )
-            logging.info(
-                '[+]   Kernel release date: '
-                + kernel.release_date.strftime('%Y-%m-%d')
-            )
+            # logging.info(
+            #     '[+]   Kernel release date: '
+            #     + kernel.release_date.strftime('%Y-%m-%d')
+            # )
             if self.elf_machine:
                 logging.info('[+]   Interesting files:')
                 for file in kernel.relevant_files.select().where(
