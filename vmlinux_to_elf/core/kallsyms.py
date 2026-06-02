@@ -29,65 +29,65 @@ from vmlinux_to_elf.kernel_db.database import (
     This class will take a raw kernel image (.IMG), and return the file
     offsets for all kernel symbols, as well as the kallsyms_* structs and
     base addresses, etc.
-    
+
     It is used as an import by "vmlinuz_extractor.py" and "elf_symbolizer.py".
-    
+
     The kallsyms table's current layout was introduced in August 2004 (since
     kernel 2.6.10), its 2004+ implementation can be found here for parsing:
     https://github.com/torvalds/linux/blob/v2.6.32/kernel/kallsyms.c
     And here for generation:
     https://github.com/torvalds/linux/blob/v2.6.32/scripts/kallsyms.c
-    
+
     ^ This format is fully supported.
-    
+
     A major evolution is that since v4.6 (2016), by default on all architectures
     except IA64, a new label called "kallsyms_relative_base" was added and
     addresses are now offsets relative to this base, rather than relative
     addresses. Also, these offsets are stored as the GNU As ".long" type, which
     is 32-bits on x86_64.
-    
+
     https://github.com/torvalds/linux/commit/2213e9a66bb87d8344a1256b4ef568220d9587fb
-    
+
     ^ This format should be supported.
-    
+
     In v4.20 (2018), more fields were shrunk down independently.
-    
+
     https://github.com/torvalds/linux/commit/80ffbaa5b1bd98e80e3239a3b8cfda2da433009a
-    
+
     ^ This format should be supported.
-    
+
     In v7.0 (2026), the format removed the relative base.
-    
+
     https://github.com/torvalds/linux/commit/a081b5789255d27b76cd2cbab85676b2a31dbde1
-    
+
     ^ This format should be supported.
-    
+
     Its 2002-2004 (versions 2.5.54-2.6.9) implementation code with basic "stem
     compression" can be found here for parsing:
     https://github.com/sarnobat/knoppix/blob/master/kernel/kallsyms.c
     Here for generation:
     https://github.com/sarnobat/knoppix/blob/master/scripts/kallsyms.c
     (patch https://lwn.net/Articles/18837/)
-    
+
     In 2002 (versions 2.5.49-2.5.53) it shortly had a version of this code
     without compression:
     https://kernel.googlesource.com/pub/scm/linux/kernel/git/ralf/linux/+/refs/tags/linux-2.5.49/kernel/kallsyms.c
     https://kernel.googlesource.com/pub/scm/linux/kernel/git/ralf/linux/+/refs/tags/linux-2.5.49/scripts/kallsyms
-    
+
     In earlier implementations (2000-2002), it was part of the modutils package
     and was more primitive (no real compression). Its implementation code can be found
     here for parsing:
     https://github.com/carlobar/uclinux_leon3_UD/blob/master/user/modutils-2.4.26/example/kallsyms.c
     Here for generation:
     https://github.com/carlobar/uclinux_leon3_UD/blob/master/user/modutils-2.4.26/obj/obj_kallsyms.c
-    
+
     Kernels 2.5.39-2.5.48 (2002) also had a transitory parser at "kernel/kallsyms.c", but the generation
     was still in modutils:
-    
+
     https://kernel.googlesource.com/pub/scm/linux/kernel/git/ralf/linux/+/refs/tags/linux-2.5.39/kernel/kallsyms.c
     (patch https://lwn.net/Articles/10796/)
 
-    
+
 """
 
 
@@ -188,16 +188,16 @@ class KallsymsFinder:
 
     """
         Symbols are output in this order:
-    
+
         $ curl -sL https://github.com/torvalds/linux/raw/v2.6.32/scripts/kallsyms.c | grep output_label
-        
+
             output_label("kallsyms_addresses");
             output_label("kallsyms_num_syms");
             output_label("kallsyms_names");
             output_label("kallsyms_markers");
             output_label("kallsyms_token_table");
             output_label("kallsyms_token_index");
-            
+
         We'll find kallsyms_token_table and infer the rest
     """
 
@@ -471,6 +471,10 @@ class KallsymsFinder:
             logging.info('[+] Kernel found in database')
             logging.info('[+]   Read kernel source: ' + kernel.browse_url)
             logging.info('[+]   Download kernel: ' + kernel.download_url)
+            logging.info(
+                '[+]   Kernel release date: '
+                + kernel.release_date
+            )
             logging.info(
                 '[+]   Kernel release date: '
                 + kernel.release_date.strftime('%Y-%m-%d')
